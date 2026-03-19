@@ -55,4 +55,4 @@ Picking up an object causes a sudden drop in LDR resistance, creating a transien
 * **Scalability:** Designing a modular PCB shield for multi-rack industrial clusters.
 
 ---
-**Developed by Karthik V S** *Mechanical Engineering Student | Government Engineering College, Thrissur* [LinkedIn Profile](https://www.linkedin.com/in/karthik-v-s-2191b728a/)
+**Developed by Karthik V S** *Mechanical Engineering Student | Government Engineering College, Thrissur* [LinkedIn Profile](https://www.linkedin.com/in/karthik-v-s-4335k)
