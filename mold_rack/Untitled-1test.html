@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IBIMS | Digital Twin Portal</title>
+    
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+    
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --card: #1a1a1a;
+            --green: #2ecc71;
+            --red: #e74c3c;
+            --orange: #f39c12;
+            --grey: #7f8c8d;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Roboto, sans-serif; 
+            background: var(--bg); 
+            color: white; 
+            margin: 0; 
+            text-align: center;
+        }
+
+        /* HEADER & STATUS LED */
+        .header { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 25px; 
+            gap: 15px; 
+            background: #161616;
+            border-bottom: 1px solid #333;
+        }
+
+        .status-led {
+            width: 18px; height: 18px; border-radius: 50%;
+            background: #333; transition: 0.4s ease;
+        }
+        .led-green { background: var(--green); box-shadow: 0 0 15px var(--green); }
+        .led-red { background: var(--red); box-shadow: 0 0 15px var(--red); }
+        .led-offline { background: var(--orange); box-shadow: 0 0 15px var(--orange); }
+
+        .pulse { animation: pulse-anim 2s infinite; }
+        @keyframes pulse-anim {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.1); }
+        }
+
+        /* 3D VIEWER */
+        model-viewer { 
+            width: 100%; 
+            height: 60vh; 
+            background: radial-gradient(circle, #222 0%, #0f0f0f 100%); 
+            transition: 0.5s ease;
+        }
+
+        /* DASHBOARD GRID */
+        .dashboard { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 15px; 
+            padding: 25px; 
+            background: #161616;
+        }
+
+        .card { 
+            background: var(--card); 
+            padding: 20px; 
+            border-radius: 12px; 
+            border: 1px solid #333;
+            transition: transform 0.3s;
+        }
+        .card:hover { transform: translateY(-3px); border-color: #555; }
+
+        .label { color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; }
+        .value { font-size: 1.2rem; font-weight: bold; margin-top: 8px; }
+
+        /* MODIFIER CLASSES */
+        .stale-data { filter: grayscale(100%) brightness(0.6); }
+        .text-green { color: var(--green); }
+        .text-red { color: var(--red); }
+        .text-orange { color: var(--orange); }
+
+        h1 { margin: 0; font-weight: 300; font-size: 1.5rem; }
+        .bold { font-weight: 800; color: var(--green); }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div id="v-led" class="status-led"></div>
+        <h1>IBIMS <span class="bold">DIGITAL TWIN</span></h1>
+    </div>
+
+    <model-viewer 
+        id="rack-model" 
+        src="mold_rack.gltf" 
+        ar 
+        camera-controls 
+        auto-rotate 
+        shadow-intensity="1">
+    </model-viewer>
+
+    <div class="dashboard">
+        <div class="card">
+            <div class="label">Hardware Link</div>
+            <div id="conn-text" class="value">CONNECTING...</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Inventory Stage</div>
+            <div id="inv-text" class="value">--</div>
+        </div>
+
+        <div class="card" style="grid-column: span 1;">
+            <div class="label">Last Data Pulse</div>
+            <div id="sync-time" class="value">--:--:--</div>
+        </div>
+    </div>
+
+    <script>
+        // REPLACE WITH YOUR DEPLOYED URL
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzhHGg7l6Qzm3SLArlyy92WtWsgTO_DOJpBip42DnZ3nVb3clcTAArvqEswfvYB3TgU/exec";
+        const OFFLINE_THRESHOLD = 15; // Seconds
+
+        async function updateDashboard() {
+            try {
+                const response = await fetch(SCRIPT_URL + "?read=status");
+                const data = await response.json(); 
+
+                const model = document.getElementById('rack-model');
+                const led = document.getElementById('v-led');
+                const connText = document.getElementById('conn-text');
+                const invText = document.getElementById('inv-text');
+                const timeText = document.getElementById('sync-time');
+
+                const lastSync = new Date(data.time);
+                const secondsSinceSync = (new Date() - lastSync) / 1000;
+                const isOffline = secondsSinceSync > OFFLINE_THRESHOLD;
+
+                // --- 1. PERSISTENT INVENTORY LOGIC (The "Digital Mirror") ---
+                // We show the last known state even if the connection is lost
+                if (data.status === "Placed") {
+                    invText.innerText = "ITEM PRESENT";
+                    invText.className = "value text-green";
+                    model.style.opacity = "1.0"; // Solid view
+                } else {
+                    invText.innerText = "EMPTY / ABSENT";
+                    invText.className = "value text-red";
+                    model.style.opacity = "0.1"; // Ghost/Transparency view
+                }
+
+                // --- 2. CONNECTION HEALTH LOGIC ---
+                led.className = "status-led"; // Reset
+
+                if (isOffline) {
+                    connText.innerText = "OFFLINE";
+                    connText.className = "value text-orange";
+                    led.classList.add("led-offline");
+                    model.classList.add("stale-data"); // Grayscale filter
+                } else {
+                    connText.innerText = "ONLINE (LIVE)";
+                    connText.className = "value text-green";
+                    led.classList.add("pulse");
+                    led.classList.add(data.status === "Placed" ? "led-green" : "led-red");
+                    model.classList.remove("stale-data");
+                }
+
+                timeText.innerText = lastSync.toLocaleTimeString();
+
+            } catch (err) {
+                document.getElementById('conn-text').innerText = "CLOUD ERROR";
+                console.error("Fetch Error:", err);
+            }
+        }
+
+        // Run every 3 seconds
+        setInterval(updateDashboard, 3000);
+        updateDashboard(); 
+    </script>
+</body>
+</html>
