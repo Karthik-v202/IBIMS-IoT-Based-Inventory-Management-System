@@ -1,6 +1,6 @@
 # 🔧 IBIMS Firmware Configuration (Digital Twin Edition)
 
-This directory contains the upgraded C++ source code for the ESP8266 (NodeMCU) edge node. As demonstrated in `WhatsApp Video 2026-03-27 at 10.29.01 PM.mp4`, the firmware has been updated to support real-time **3D Digital Twin Synchronization** alongside Signal-to-Noise Ratio (SNR) management and cloud telemetry resilience.
+This directory contains the upgraded C++ source code for the ESP8266 (NodeMCU) edge node. As demonstrated in `demo`, the firmware has been updated to support real-time **3D Digital Twin Synchronization** alongside Signal-to-Noise Ratio (SNR) management and cloud telemetry resilience.
 
 ## 📍 Pinout Mapping
 | Component | ESP8266 Pin | GPIO | Role |
