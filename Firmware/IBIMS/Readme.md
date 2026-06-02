@@ -11,7 +11,7 @@ This directory contains the upgraded C++ source code for the ESP8266 (NodeMCU) e
 | **Green LED** | D1 | GPIO 5 | Inventory Item Present Indicator |
 
 ## ⚙️ Logic & Digital Twin Calibration
-- **Placement Threshold:** Triggered at ADC values > 60. As shown in `WhatsApp Video 2026-03-27 at 10.29.01 PM.mp4`, placing an item onto the physical structure instantly illuminates the **Green LED** and updates the Web Dashboard state to **ITEM PRESENT**, rendering the item on the 3D model canvas.
+- **Placement Threshold:** Triggered at ADC values > 60. As shown in `demo`, placing an item onto the physical structure instantly illuminates the **Green LED** and updates the Web Dashboard state to **ITEM PRESENT**, rendering the item on the 3D model canvas.
 - **Pick-up Threshold:** Triggered at ADC values > 4 (relative to baseline) + LDR High-to-Low transition. This action clears the object from the 3D canvas, reverts the dashboard status to **EMPTY / ABSENT**, and illuminates the **Red LED**.
 - **Hysteresis:** A 3000ms lockout is active after every event to prevent mechanical bounce triggers from sending duplicate telemetry to the web application.
 
