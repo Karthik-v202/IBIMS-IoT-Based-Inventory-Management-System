@@ -6,6 +6,7 @@
 
 ## 📺 Live Demonstration
 ![Hardware Demo](./Media/demo.gif)
+![Hardware Demo V2](./Media/Video_Project_5.mp4).
 
 *Watch the IBIMS system detect an item placement, trigger the Red Status LED, and synchronize the event to the Cloud Ledger in under 5 seconds.*
 
