@@ -7,8 +7,10 @@ Version 2 upgrades the architecture from a simple transactional logger to a full
 ---
 
 ## 📺 Live Demonstration
-![Hardware Demo](Media/demo.gif)
-![Hardware Demo V2](Media/DemoV2.gif)
+<p align="center">
+  <img src="Media/demo.gif" width="45%" alt="Hardware Demo V1" />
+  <img src="Media/DemoV2gif" width="45%" alt="Hardware Demo V2" />
+</p>
 
 *Watch the IBIMS system detect an item placement, trigger the physical state indicators, and synchronize the event to the Cloud-hosted Digital Twin Ledger in real time.*
 
